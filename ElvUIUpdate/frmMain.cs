@@ -1,14 +1,14 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Configuration;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ICSharpCode.SharpZipLib.Zip;
 
+/*todo: https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-compress-and-extract-files */
 namespace ElvUIUpdate
 {
     public partial class frmMain : Form
@@ -95,42 +95,8 @@ namespace ElvUIUpdate
             lbProgress.Text = "Extracting Files";
             if (!string.IsNullOrEmpty(localFilePath))
             {
-                using (ZipInputStream zipStream = new ZipInputStream(File.OpenRead(localFilePath)))
-                {
-                    ZipEntry zipEntry;
-                    while ((zipEntry = zipStream.GetNextEntry()) != null)
-                    {
-                        pgBar.Value = Decimal.ToInt32(204800 / (new System.IO.FileInfo(localFilePath).Length));
-                        string directoryName = Path.GetDirectoryName(zipEntry.Name);
-                        string fileName = Path.GetFileName(zipEntry.Name);
-
-                        if (directoryName.Length > 0 && !Directory.Exists(addonsFolder + "\\" + directoryName))
-                        {
-                            Directory.CreateDirectory(addonsFolder + "\\" + directoryName);
-                        }
-
-                        if (fileName != String.Empty)
-                        {
-                            using (FileStream streamWriter = File.Create(addonsFolder + "\\" + zipEntry.Name.Replace("/", @"\")))
-                            {
-                                int size = 2048;
-                                byte[] data = new byte[2048];
-                                while (true)
-                                {
-                                    size = zipStream.Read(data, 0, data.Length);
-                                    if (size > 0)
-                                    {
-                                        streamWriter.Write(data, 0, size);
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                pgBar.Value = Decimal.ToInt32(204800 / (new System.IO.FileInfo(localFilePath).Length));
+                ZipFile.ExtractToDirectory(localFilePath, addonsFolder);
             }
             pgBar.Value = 100;
             lbProgress.Text = "Finished";
