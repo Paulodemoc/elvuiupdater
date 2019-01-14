@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-/*todo: https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-compress-and-extract-files */
 namespace ElvUIUpdate
 {
     public partial class frmMain : Form
